@@ -1,0 +1,27 @@
+{% extends 'base_nav.html' %}
+{% block container %}
+    <div class="row">
+        <div class="col-8 col-lg-4 offset-2 offset-lg-4">
+            <form class="form-signin pt-5" method="post">
+                <div class="mt-5 form-label-group">
+                    <p class="text-muted">Электронная почта</p>
+                    {% for err in form.mail.errors %}
+                        <p class="alert alert-danger" role="alert">{{ err }}</p>
+                    {% endfor %}
+                    {{ form.mail(class="form-control") }}
+                    <label for="inputEmail"></label>
+                </div>
+                <div class="form-label-group">
+                    <p class="text-muted">Пароль</p>
+                    {% for err in form.password.errors %}
+                        <p class="alert alert-danger" role="alert">{{ err }}</p>
+                    {% endfor %}
+                    {{ form.password(class="form-control" ) }}
+                    <label for="inputPassword"></label>
+                </div>
+                <div class="checkbox mb-3"></div>
+                <button class="btn btn-lg btn-danger btn-block" type="submit">Войти</button>
+                <div class="checkbox mb-3"></div>
+            </form>
+        </div>
+{% endblock %}

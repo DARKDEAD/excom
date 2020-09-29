@@ -1,0 +1,43 @@
+{% extends 'base_nav.html' %}
+{% block container %}
+    <div class="row">
+        <div class="col-md-6">
+            <ul class="nav nav-pills">
+                <a class="navbar-brand " aria-disabled="true">Сортировка:</a>
+                <li class="nav-item">
+                    <a class="nav-link active" href="#">по услуге</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">по адресу</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    {% for rate in rates %}
+        <div class="mt-4">
+            <h5> Услуга: "{{ rate.service_name }}" </h5>
+        </div>
+        <div class="row">
+            <div class="col-md-10">
+                <div class="table-responsive-lg table-sm">
+                    <table class="table table-bordered text-center">
+                        <thead class="table-secondary">
+                        <tr class="d-flex">
+                            <th class="col-10" scope="col">Адрес</th>
+                            <th class="col" scope="col">Тариф</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for address in rate.addr_sum|sort(attribute="address") %}
+                            <tr class="d-flex">
+                                <td class="col-10">{{ address.address }}</td>
+                                <td class="col">{{ address.sum }} руб.</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}

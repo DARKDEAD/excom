@@ -1,0 +1,16 @@
+{% extends 'base_nav.html' %}
+{% block container %}
+    <div class="row">
+        <div class="col-8 col-lg-4 offset-2 offset-lg-4">
+            <form class="form-signin pt-5" method='post' enctype="multipart/form-data">
+                <div class="mt-5 form-label-group">
+                    <p class="text-muted">Укажите файл сожержащий данные</p>
+                    <p><input type='file' name='file'>
+
+                </div>
+                <div class="checkbox mb-3"></div>
+                <button class="btn btn-lg btn-danger btn-block" value=Upload type="submit">Загрузить</button>
+                <div class="checkbox mb-3"></div>
+            </form>
+        </div>
+{% endblock %}
