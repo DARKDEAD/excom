@@ -106,7 +106,11 @@ class Renter(db.Model):
 
 
 def upload_data_from_db():
-    with open(os.path.join(app.config['UPLOAD_FOLDER'], app.config['FILENAME_IMPORT']), "r", encoding="utf-8") as f:
+    with open(
+            os.path.join(app.config["UPLOAD_FOLDER"], app.config["FILENAME_IMPORT"]),
+            "r",
+            encoding="utf-8",
+            ) as f:
         contents = f.read()
 
     my_list = json.loads(contents)
@@ -116,86 +120,93 @@ def upload_data_from_db():
     for y in year_pay:
         year = PayPeriod.query.filter_by(year=y).first()
         if year is None:
-            for m in my_list['month_name']:
+            for m in my_list["month_name"]:
                 period = PayPeriod()
-                period.month_number = str(m['month_number'])
-                period.month_name_ru = m['month_name_ru']
+                period.month_number = str(m["month_number"])
+                period.month_name_ru = m["month_name_ru"]
                 period.year = y
                 db.session.add(period)
 
     # Address
-    for building in my_list['building']:
-        uid = building['uid']
+    for building in my_list["building"]:
+        uid = building["uid"]
         if Address.query.filter_by(uid=uid).first() is None:
             address = Address()
             address.uid = uid
-            address.street_ru = building['street']
-            address.home = building['home']
-            address.bulk = building['bulk']
+            address.street_ru = building["street"]
+            address.home = building["home"]
+            address.bulk = building["bulk"]
 
             db.session.add(address)
 
     # Service
-    for s in my_list['service']:
-        uid = s['uid']
+    for s in my_list["service"]:
+        uid = s["uid"]
 
-        if Service.query.filter_by(uid=uid).first() is None \
-                and Service.query.filter_by(name_ru=s['name']).first() is None:
+        if (
+                Service.query.filter_by(uid=uid).first() is None
+                and Service.query.filter_by(name_ru=s["name"]).first() is None
+        ):
             service = Service()
-            service.uid = s['uid']
-            service.name_ru = s['name']
-            service.unit = s['unit']
+            service.uid = s["uid"]
+            service.name_ru = s["name"]
+            service.unit = s["unit"]
 
             db.session.add(service)
 
     db.session.commit()
 
     # Rate
-    for r in my_list['rate']:
-        address = Address.query.filter_by(uid=r['uid_address']).first()
-        service = Service.query.filter_by(uid=r['uid_service']).first()
+    for r in my_list["rate"]:
+        address = Address.query.filter_by(uid=r["uid_address"]).first()
+        service = Service.query.filter_by(uid=r["uid_service"]).first()
 
         if address is None or service is None:
             continue
 
-        for r_p in r['rate_period']:
-            id_period = PayPeriod.query.filter_by(month_number=str(r_p['month']), year=r_p['year']).first()
+        for r_p in r["rate_period"]:
+            id_period = PayPeriod.query.filter_by(
+                    month_number=str(r_p["month"]),
+                    year=r_p["year"]
+                    ).first()
 
-            rate_in_db = Rate.query.filter_by(id_address=address.id,
-                                              id_service=service.id,
-                                              id_period=id_period.id).first()
+            rate_in_db = Rate.query.filter_by(
+                    id_address=address.id,
+                    id_service=service.id,
+                    id_period=id_period.id
+                    ).first()
 
             if rate_in_db is None:
                 rate = Rate()
                 rate.id_address = address.id
                 rate.id_service = service.id
                 rate.id_period = id_period.id
-                rate.sum = r_p['sum']
+                rate.sum = r_p["sum"]
                 db.session.add(rate)
             else:
-                rate_in_db.sum = r_p['sum']
+                rate_in_db.sum = r_p["sum"]
 
     # Renter
-    for r in my_list['renters']:
-        uid = r['uid']
+    for r in my_list["renters"]:
+        uid = r["uid"]
 
         if Renter.query.filter_by(uid=uid).first() is not None:
             renter = Renter.query.filter_by(uid=uid).first()
         else:
             renter = Renter()
 
-        address = Address.query.filter_by(uid=r['building']).first()
+        address = Address.query.filter_by(uid=r["building"]).first()
         if address is None:
             continue
 
         renter.id_address = address.id
         renter.uid = uid
-        renter.name = r['name']
-        renter.account = r['account']
-        renter.float = r['float']
-        renter.floor_area = r['floorarea']
+        renter.name = r["name"]
+        renter.account = r["account"]
+        renter.float = r["float"]
+        renter.floor_area = r["floorarea"]
         try:
-            renter.floor_space = r['floorspace']
+            renter.floor_space = r["floorspace"]
         except KeyError:
             renter.floor_space = 0
 
@@ -206,23 +217,30 @@ def upload_data_from_db():
     db.session.commit()
 
     # Stubs
-    for s in my_list['stubs']:
-        renter = Renter.query.filter_by(uid=s['account']).first()
+    for s in my_list["stubs"]:
+        renter = Renter.query.filter_by(uid=s["account"]).first()
 
         if renter is None:
             continue
 
-        period = PayPeriod.query.filter_by(month_number=my_list['period'][0]['month'],
-                                           year=my_list['period'][0]['year']).first()
+        period = PayPeriod.query.filter_by(
+                month_number=my_list["period"][0]["month"],
+                year=my_list["period"][0]["year"],
+                ).first()
+
         if period is None:
             continue
 
-        for stb in s['stubs']:
-            service = Service.query.filter_by(uid=stb['service']).first()
+        for stb in s["stubs"]:
+            service = Service.query.filter_by(uid=stb["service"]).first()
             if service is None:
                 continue
 
-            find_stub = Stub.query.filter_by(id_renter=renter.id, id_period=period.id, id_service=service.id).first()
+            find_stub = Stub.query.filter_by(
+                    id_renter=renter.id,
+                    id_period=period.id,
+                    id_service=service.id
+                    ).first()
             if find_stub is None:
                 stub = Stub()
             else:
@@ -232,9 +250,9 @@ def upload_data_from_db():
             stub.id_service = service.id
             stub.id_renter = renter.id
 
-            stub.sum = stb['sum']
-            stub.debt = stb['debt']
-            stub.amount = stb['amount']
+            stub.sum = stb["sum"]
+            stub.debt = stb["debt"]
+            stub.amount = stb["amount"]
 
             db.session.add(stub)
 
