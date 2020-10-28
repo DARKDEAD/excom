@@ -205,6 +205,7 @@ def upload_data_from_db():
         renter.account = r["account"]
         renter.float = r["float"]
         renter.floor_area = r["floorarea"]
+
         try:
             renter.floor_space = r["floorspace"]
         except KeyError:
@@ -241,6 +242,7 @@ def upload_data_from_db():
                     id_period=period.id,
                     id_service=service.id
                     ).first()
+
             if find_stub is None:
                 stub = Stub()
             else:
