@@ -234,6 +234,7 @@ def upload_data_from_db():
 
         for stb in s["stubs"]:
             service = Service.query.filter_by(uid=stb["service"]).first()
+
             if service is None:
                 continue
 
